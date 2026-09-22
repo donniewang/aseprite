@@ -62,6 +62,9 @@ public:
     , m_ry(yAngle * pi / 180.0)
     , m_rz(zAngle * pi / 180.0)
   {
+    const Vec3 axis = rotate({ 0, 0, 1 });
+    const double projectedLength = std::hypot(axis.x, axis.y);
+    m_depthScale = (projectedLength > 1e-6 ? 1.0 / projectedLength : 1.0);
   }
 
   Vec3 rotate(Vec3 p) const
@@ -81,7 +84,7 @@ public:
 
   Vertex project(double x, double y, double z) const
   {
-    const Vec3 p = rotate({ x - m_cx, y - m_cy, z });
+    const Vec3 p = rotate({ x - m_cx, y - m_cy, z * m_depthScale });
     return { p.x, p.y, p.z };
   }
 
@@ -98,7 +101,7 @@ public:
   }
 
 private:
-  double m_cx, m_cy, m_rx, m_ry, m_rz;
+  double m_cx, m_cy, m_rx, m_ry, m_rz, m_depthScale;
 };
 
 doc::color_t source_color(const doc::Image* image,
