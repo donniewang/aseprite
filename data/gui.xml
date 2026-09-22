@@ -775,6 +775,8 @@
             <param name="target" value="mask" />
             <param name="angle" value="-90" />
           </item>
+          <separator />
+          <item command="IsometricExtrude" text="@.edit_rotate_isometric_extrude" />
         </menu>
         <item command="Flip" text="@.edit_flip_horizontal">
           <param name="target" value="mask" />

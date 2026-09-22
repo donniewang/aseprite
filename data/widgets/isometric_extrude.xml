@@ -1,0 +1,26 @@
+<!-- Aseprite -->
+<gui>
+<window id="isometric_extrude" text="@.title">
+  <vbox>
+    <grid columns="2">
+      <label text="@.position" for="position" />
+      <combobox id="position" expansive="true" />
+      <label text="@.x_rotation" for="x_rotation" />
+      <expr id="x_rotation" expansive="true" suffix="°" />
+      <label text="@.y_rotation" for="y_rotation" />
+      <expr id="y_rotation" expansive="true" suffix="°" />
+      <label text="@.z_rotation" for="z_rotation" />
+      <expr id="z_rotation" expansive="true" suffix="°" />
+      <label text="@.depth" for="depth" />
+      <expr id="depth" expansive="true" suffix="px" />
+      <label text="@.surface" for="surface" />
+      <combobox id="surface" expansive="true" />
+    </grid>
+    <separator horizontal="true" />
+    <hbox homogeneous="true" cell_align="right">
+      <button text="@general.ok" closewindow="true" id="ok" magnet="true" minwidth="60" />
+      <button text="@general.cancel" closewindow="true" />
+    </hbox>
+  </vbox>
+</window>
+</gui>
