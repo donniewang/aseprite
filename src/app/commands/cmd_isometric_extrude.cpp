@@ -82,10 +82,7 @@ public:
   Vertex project(double x, double y, double z) const
   {
     const Vec3 p = rotate({ x - m_cx, y - m_cy, z });
-    // The projected X and Y axes have exactly a 2:1 pixel slope.
-    return { (p.x - p.y) * 0.7071067811865476,
-             (p.x + p.y) * 0.3535533905932738 - p.z * 0.8660254037844386,
-             (p.x + p.y) * 0.6123724356957945 + p.z * 0.5 };
+    return { p.x, p.y, p.z };
   }
 
   double light(Vec3 normal, int surface) const
