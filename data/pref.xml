@@ -39,6 +39,10 @@
       <value id="CHECKERED_1x1" value="4" />
       <value id="CHECKERED_CUSTOM" value="5" />
     </enum>
+    <enum id="BgPattern">
+      <value id="CHECKERED" value="0" />
+      <value id="ISOMETRIC" value="1" />
+    </enum>
     <enum id="StopAtGrid">
       <value id="NEVER" value="0" />
       <value id="IF_VISIBLE" value="1" />
@@ -548,6 +552,7 @@
     </section>
     <section id="bg" canforce="true">
       <option id="type" type="BgType" default="BgType::CHECKERED_16x16" />
+      <option id="pattern" type="BgPattern" default="BgPattern::CHECKERED" />
       <option id="size" type="gfx::Size" default="gfx::Size(16, 16)" />
       <option id="zoom" type="bool" default="true" />
       <option id="color1" type="app::Color" default="app::Color::fromRgb(128, 128, 128)" />

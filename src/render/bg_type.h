@@ -15,6 +15,7 @@ enum class BgType {
   NONE,
   TRANSPARENT,
   CHECKERED,
+  ISOMETRIC,
 };
 
 } // namespace render

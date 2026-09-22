@@ -169,6 +169,26 @@ TEST(Render, CheckeredBackground)
   EXPECT_4X4_PIXELS(dst.get(), 1, 1, 2, 2, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 1, 1);
 }
 
+TEST(Render, IsometricBackground)
+{
+  std::unique_ptr<Image> dst(Image::create(IMAGE_INDEXED, 8, 4));
+  Render render;
+  BgOptions bg;
+  bg.type = BgType::ISOMETRIC;
+  bg.colorPixelFormat = IMAGE_INDEXED;
+  bg.color1 = 1;
+  bg.color2 = 2;
+  bg.stripeSize = gfx::Size(4, 4);
+  render.setBgOptions(bg);
+  render.renderCheckeredBackground(dst.get(), gfx::Clip(0, 0, 0, 0, 8, 4));
+
+  EXPECT_EQ(2, get_pixel(dst.get(), 0, 0));
+  EXPECT_EQ(1, get_pixel(dst.get(), 3, 0));
+  EXPECT_EQ(2, get_pixel(dst.get(), 2, 1));
+  EXPECT_EQ(1, get_pixel(dst.get(), 3, 1));
+  EXPECT_EQ(2, get_pixel(dst.get(), 7, 0));
+}
+
 TEST(Render, ZoomAndDstBounds)
 {
   // Create this image:

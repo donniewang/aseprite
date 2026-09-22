@@ -380,8 +380,11 @@
         <vbox id="section_bg">
           <combobox id="bg_scope" />
 
-          <separator text="@.bg_checkered" horizontal="true" />
+          <separator text="@.bg_transparent" horizontal="true" />
           <grid columns="2">
+            <label text="@.bg_pattern" for="bg_pattern" />
+            <combobox id="bg_pattern" />
+
             <label text="@.bg_size" for="checkered_row" />
             <hbox id="checkered_row">
               <combobox id="checkered_bg_size" />

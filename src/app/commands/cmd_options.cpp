@@ -470,6 +470,15 @@ public:
     checkeredBgSize()->addItem(Strings::options_bg_custom_size());
     checkeredBgSize()->Change.connect([this] { onCheckeredBgSizeChange(); });
 
+    bgPattern()->addItem(Strings::options_bg_pattern_checkered());
+    bgPattern()->addItem(Strings::options_bg_pattern_isometric());
+    bgPattern()->Change.connect([this] {
+      checkeredBgCustomH()->setVisible(
+        checkeredBgSize()->getSelectedItemIndex() == int(app::gen::BgType::CHECKERED_CUSTOM) &&
+        bgPattern()->getSelectedItemIndex() == int(app::gen::BgPattern::CHECKERED));
+      sectionBg()->layout();
+    });
+
     // Reset buttons
     resetBg()->Click.connect([this] { onResetBg(); });
     resetGrid()->Click.connect([this] { onResetGrid(); });
@@ -953,6 +962,7 @@ public:
     m_curPref->pixelGrid.autoOpacity(pixelGridAutoOpacity()->isSelected());
 
     m_curPref->bg.type(app::gen::BgType(checkeredBgSize()->getSelectedItemIndex()));
+    m_curPref->bg.pattern(app::gen::BgPattern(bgPattern()->getSelectedItemIndex()));
     if (m_curPref->bg.type() == app::gen::BgType::CHECKERED_CUSTOM) {
       m_curPref->bg.size(
         gfx::Size(checkeredBgCustomW()->textInt(), checkeredBgCustomH()->textInt()));
@@ -1636,6 +1646,7 @@ private:
     }
 
     checkeredBgSize()->setSelectedItemIndex(int(m_curPref->bg.type()));
+    bgPattern()->setSelectedItemIndex(int(m_curPref->bg.pattern()));
     checkeredBgZoom()->setSelected(m_curPref->bg.zoom());
     checkeredBgColor1()->setColor(m_curPref->bg.color1());
     checkeredBgColor2()->setColor(m_curPref->bg.color2());
@@ -1649,7 +1660,8 @@ private:
       checkeredBgCustomW()->setTextf("%d", m_curPref->bg.size().w);
       checkeredBgCustomH()->setTextf("%d", m_curPref->bg.size().h);
       checkeredBgCustomW()->setVisible(true);
-      checkeredBgCustomH()->setVisible(true);
+      checkeredBgCustomH()->setVisible(bgPattern()->getSelectedItemIndex() ==
+                                     int(app::gen::BgPattern::CHECKERED));
     }
     else {
       checkeredBgCustomW()->setVisible(false);
@@ -1691,6 +1703,7 @@ private:
     // Reset global preferences (use default values specified in pref.xml)
     if (m_curPref == &m_globPref) {
       checkeredBgSize()->setSelectedItemIndex(int(pref.bg.type.defaultValue()));
+      bgPattern()->setSelectedItemIndex(int(pref.bg.pattern.defaultValue()));
       checkeredBgCustomW()->setVisible(false);
       checkeredBgCustomH()->setVisible(false);
       checkeredBgZoom()->setSelected(pref.bg.zoom.defaultValue());
@@ -1700,6 +1713,7 @@ private:
     // Reset document preferences with global settings
     else {
       checkeredBgSize()->setSelectedItemIndex(int(pref.bg.type()));
+      bgPattern()->setSelectedItemIndex(int(pref.bg.pattern()));
       checkeredBgZoom()->setSelected(pref.bg.zoom());
       checkeredBgColor1()->setColor(pref.bg.color1());
       checkeredBgColor2()->setColor(pref.bg.color2());

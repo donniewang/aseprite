@@ -115,6 +115,10 @@ void EditorRender::setupBackground(Doc* doc, doc::PixelFormat pixelFormat)
     default: bgType = render::BgType::TRANSPARENT; break;
   }
 
+  if (bgType == render::BgType::CHECKERED &&
+      docPref.bg.pattern() == app::gen::BgPattern::ISOMETRIC)
+    bgType = render::BgType::ISOMETRIC;
+
   render::BgOptions bg;
   bg.type = bgType;
   bg.zoom = docPref.bg.zoom();
