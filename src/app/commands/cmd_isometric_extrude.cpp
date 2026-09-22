@@ -55,7 +55,7 @@ constexpr double pi = 3.14159265358979323846;
 
 class Projection {
 public:
-  Projection(int xAngle, int yAngle, int zAngle, double centerX, double centerY)
+  Projection(double xAngle, double yAngle, double zAngle, double centerX, double centerY)
     : m_cx(centerX)
     , m_cy(centerY)
     , m_rx(xAngle * pi / 180.0)
@@ -232,18 +232,22 @@ public:
     position()->setSelectedItemIndex(0);
     surface()->setSelectedItemIndex(2);
     depth()->setText("20");
-    xRotation()->setText("0");
-    yRotation()->setText("0");
-    zRotation()->setText("0");
+    xRotation()->setText("50.768");
+    yRotation()->setText("37.761");
+    zRotation()->setText("-26.565");
     position()->Change.connect([this] {
-      static const int angles[4][3] = { { 0, 0, 0 }, { 0, -90, 0 },
-                                        { 0, 90, 0 }, { 180, 0, 0 } };
+      // Rotate the top view around the object's Y axis for the side views,
+      // and around its X axis for the bottom view (Rz * Ry * Rx order).
+      static const char* angles[4][3] = { { "50.768", "37.761", "-26.565" },
+                                          { "45.000", "-30.000", "-90.000" },
+                                          { "135.000", "30.000", "90.000" },
+                                          { "-129.232", "37.761", "-26.565" } };
       const int selected = position()->getSelectedItemIndex();
       if (selected >= 0 && selected < 4) {
         m_updatingPreset = true;
-        xRotation()->setTextf("%d", angles[selected][0]);
-        yRotation()->setTextf("%d", angles[selected][1]);
-        zRotation()->setTextf("%d", angles[selected][2]);
+        xRotation()->setText(angles[selected][0]);
+        yRotation()->setText(angles[selected][1]);
+        zRotation()->setText(angles[selected][2]);
         m_updatingPreset = false;
       }
     });
@@ -302,8 +306,8 @@ protected:
       return;
     }
 
-    const Projection project(window.xRotation()->textInt(), window.yRotation()->textInt(),
-                             window.zRotation()->textInt(),
+    const Projection project(window.xRotation()->textDouble(), window.yRotation()->textDouble(),
+                             window.zRotation()->textDouble(),
                              bounds.w / 2.0, bounds.h / 2.0);
     double minX = std::numeric_limits<double>::infinity();
     double minY = minX, maxX = -minX, maxY = -minX;
