@@ -171,7 +171,7 @@ TEST(Render, CheckeredBackground)
 
 TEST(Render, IsometricBackground)
 {
-  std::unique_ptr<Image> dst(Image::create(IMAGE_INDEXED, 8, 4));
+  std::unique_ptr<Image> dst(Image::create(IMAGE_INDEXED, 32, 16));
   Render render;
   BgOptions bg;
   bg.type = BgType::ISOMETRIC;
@@ -180,13 +180,20 @@ TEST(Render, IsometricBackground)
   bg.color2 = 2;
   bg.stripeSize = gfx::Size(4, 4);
   render.setBgOptions(bg);
-  render.renderCheckeredBackground(dst.get(), gfx::Clip(0, 0, 0, 0, 8, 4));
+  render.renderCheckeredBackground(dst.get(), gfx::Clip(0, 0, 0, 0, 32, 16));
 
   EXPECT_EQ(2, get_pixel(dst.get(), 0, 0));
   EXPECT_EQ(1, get_pixel(dst.get(), 3, 0));
   EXPECT_EQ(2, get_pixel(dst.get(), 2, 1));
   EXPECT_EQ(1, get_pixel(dst.get(), 3, 1));
-  EXPECT_EQ(2, get_pixel(dst.get(), 7, 0));
+  EXPECT_EQ(1, get_pixel(dst.get(), 14, 0));
+  EXPECT_EQ(2, get_pixel(dst.get(), 15, 0));
+  EXPECT_EQ(2, get_pixel(dst.get(), 16, 0));
+  EXPECT_EQ(1, get_pixel(dst.get(), 17, 0));
+  EXPECT_EQ(2, get_pixel(dst.get(), 6, 3));
+  EXPECT_EQ(1, get_pixel(dst.get(), 7, 3));
+  EXPECT_EQ(1, get_pixel(dst.get(), 8, 3));
+  EXPECT_EQ(2, get_pixel(dst.get(), 9, 3));
 }
 
 TEST(Render, ZoomAndDstBounds)

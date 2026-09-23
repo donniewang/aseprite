@@ -55,16 +55,18 @@ constexpr double pi = 3.14159265358979323846;
 
 class Projection {
 public:
-  Projection(double xAngle, double yAngle, double zAngle, double centerX, double centerY)
+  Projection(double xAngle, double yAngle, double zAngle, double centerX, double centerY,
+             bool isometricPreset)
     : m_cx(centerX)
     , m_cy(centerY)
     , m_rx(xAngle * pi / 180.0)
     , m_ry(yAngle * pi / 180.0)
     , m_rz(zAngle * pi / 180.0)
+    , m_pixelScale(isometricPreset ? std::sqrt(2.0) : 1.0)
   {
     const Vec3 axis = rotate({ 0, 0, 1 });
     const double projectedLength = std::hypot(axis.x, axis.y);
-    m_depthScale = (projectedLength > 1e-6 ? 1.0 / projectedLength : 1.0);
+    m_depthScale = (projectedLength > 1e-6 ? 1.0 / (projectedLength * m_pixelScale) : 1.0);
   }
 
   Vec3 rotate(Vec3 p) const
@@ -85,7 +87,7 @@ public:
   Vertex project(double x, double y, double z) const
   {
     const Vec3 p = rotate({ x - m_cx, y - m_cy, z * m_depthScale });
-    return { p.x, p.y, p.z };
+    return { p.x * m_pixelScale, p.y * m_pixelScale, p.z };
   }
 
   double light(Vec3 normal, int surface) const
@@ -101,7 +103,7 @@ public:
   }
 
 private:
-  double m_cx, m_cy, m_rx, m_ry, m_rz, m_depthScale;
+  double m_cx, m_cy, m_rx, m_ry, m_rz, m_pixelScale, m_depthScale;
 };
 
 doc::color_t source_color(const doc::Image* image,
@@ -244,24 +246,34 @@ public:
                                           { "-129.232", "37.761", "-26.565" } };
       const int selected = position()->getSelectedItemIndex();
       if (selected >= 0 && selected < 4) {
+        m_pixelScale = true;
         m_updatingPreset = true;
         xRotation()->setText(angles[selected][0]);
         yRotation()->setText(angles[selected][1]);
         zRotation()->setText(angles[selected][2]);
         m_updatingPreset = false;
       }
+      else if (selected == 4 && !m_editingPresetAngle)
+        m_pixelScale = false;
     });
     auto custom = [this] {
-      if (!m_updatingPreset && position()->getSelectedItemIndex() != 4)
+      if (!m_updatingPreset && position()->getSelectedItemIndex() != 4) {
+        m_editingPresetAngle = true;
         position()->setSelectedItemIndex(4);
+        m_editingPresetAngle = false;
+      }
     };
     xRotation()->Change.connect(custom);
     yRotation()->Change.connect(custom);
     zRotation()->Change.connect(custom);
   }
 
+  bool pixelScale() const { return m_pixelScale; }
+
 private:
   bool m_updatingPreset = false;
+  bool m_editingPresetAngle = false;
+  bool m_pixelScale = true;
 };
 
 } // namespace
@@ -308,7 +320,8 @@ protected:
 
     const Projection project(window.xRotation()->textDouble(), window.yRotation()->textDouble(),
                              window.zRotation()->textDouble(),
-                             bounds.w / 2.0, bounds.h / 2.0);
+                             bounds.w / 2.0, bounds.h / 2.0,
+                             window.pixelScale());
     double minX = std::numeric_limits<double>::infinity();
     double minY = minX, maxX = -minX, maxY = -minX;
     for (int zz : { 0, -depth }) {

@@ -920,8 +920,8 @@ void Render::renderCheckeredBackground(Image* image, const gfx::Clip& area)
   if (m_bg.type == BgType::ISOMETRIC) {
     // Each cell is a 2:1 diamond. Adjacent cells differ in one of these
     // diagonal coordinates, so their colors alternate.
-    const int diamond_w = 2 * tile_w;
-    const int diamond_h = tile_w;
+    const int diamond_w = 4 * tile_w;
+    const int diamond_h = 2 * tile_w;
     const int left = std::max(0, dstBounds.x);
     const int right = std::min(image->width(), dstBounds.x2());
     const int top = std::max(0, dstBounds.y);

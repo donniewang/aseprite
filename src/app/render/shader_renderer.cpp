@@ -370,8 +370,8 @@ void ShaderRenderer::renderCheckeredBackground(os::Surface* dstSurface,
   const bool isometric = (m_bgOptions.type == render::BgType::ISOMETRIC);
   builder.uniform("iIsometric") = isometric ? 1.0f : 0.0f;
   const float tileW = float(m_bgOptions.stripeSize.w) * sx;
-  builder.uniform("iStripeSize") = SkV2{ isometric ? 2.0f * tileW : tileW,
-                                         isometric ? tileW : float(m_bgOptions.stripeSize.h) * sy };
+  builder.uniform("iStripeSize") = SkV2{ isometric ? 4.0f * tileW : tileW,
+                                         isometric ? 2.0f * tileW : float(m_bgOptions.stripeSize.h) * sy };
 
   SkCanvas* canvas = &static_cast<os::SkiaSurface*>(dstSurface)->canvas();
   canvas->save();
