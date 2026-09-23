@@ -473,9 +473,18 @@ public:
     bgPattern()->addItem(Strings::options_bg_pattern_checkered());
     bgPattern()->addItem(Strings::options_bg_pattern_isometric());
     bgPattern()->Change.connect([this] {
+      const bool isometric = (bgPattern()->getSelectedItemIndex() ==
+                              int(app::gen::BgPattern::ISOMETRIC));
+      static const char* checkeredSizes[] = { "16x16", "8x8", "4x4", "2x2", "1x1" };
+      static const char* isometricSizes[] = { "32x16", "16x8", "8x4", "4x2", "2x1" };
+      for (int i = 0; i < 5; ++i)
+        checkeredBgSize()->setItemText(i, isometric ? isometricSizes[i] : checkeredSizes[i]);
+      const int selectedSize = checkeredBgSize()->getSelectedItemIndex();
+      if (selectedSize >= 0)
+        checkeredBgSize()->getEntryWidget()->setText(checkeredBgSize()->getItemText(selectedSize));
       checkeredBgCustomH()->setVisible(
         checkeredBgSize()->getSelectedItemIndex() == int(app::gen::BgType::CHECKERED_CUSTOM) &&
-        bgPattern()->getSelectedItemIndex() == int(app::gen::BgPattern::CHECKERED));
+        !isometric);
       sectionBg()->layout();
     });
 

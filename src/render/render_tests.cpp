@@ -171,29 +171,34 @@ TEST(Render, CheckeredBackground)
 
 TEST(Render, IsometricBackground)
 {
-  std::unique_ptr<Image> dst(Image::create(IMAGE_INDEXED, 32, 16));
+  std::unique_ptr<Image> dst(Image::create(IMAGE_INDEXED, 64, 32));
   Render render;
   BgOptions bg;
   bg.type = BgType::ISOMETRIC;
   bg.colorPixelFormat = IMAGE_INDEXED;
   bg.color1 = 1;
   bg.color2 = 2;
-  bg.stripeSize = gfx::Size(4, 4);
+  bg.stripeSize = gfx::Size(16, 16);
   render.setBgOptions(bg);
-  render.renderCheckeredBackground(dst.get(), gfx::Clip(0, 0, 0, 0, 32, 16));
+  render.renderCheckeredBackground(dst.get(), gfx::Clip(0, 0, 0, 0, 64, 32));
 
   EXPECT_EQ(2, get_pixel(dst.get(), 0, 0));
-  EXPECT_EQ(1, get_pixel(dst.get(), 3, 0));
-  EXPECT_EQ(2, get_pixel(dst.get(), 2, 1));
-  EXPECT_EQ(1, get_pixel(dst.get(), 3, 1));
-  EXPECT_EQ(1, get_pixel(dst.get(), 14, 0));
-  EXPECT_EQ(2, get_pixel(dst.get(), 15, 0));
-  EXPECT_EQ(2, get_pixel(dst.get(), 16, 0));
-  EXPECT_EQ(1, get_pixel(dst.get(), 17, 0));
-  EXPECT_EQ(2, get_pixel(dst.get(), 6, 3));
-  EXPECT_EQ(1, get_pixel(dst.get(), 7, 3));
-  EXPECT_EQ(1, get_pixel(dst.get(), 8, 3));
-  EXPECT_EQ(2, get_pixel(dst.get(), 9, 3));
+  // Top and bottom tips span two horizontal pixels and meet on the next row.
+  for (int y : { 0, 15, 16 }) {
+    EXPECT_EQ(1, get_pixel(dst.get(), 30, y));
+    EXPECT_EQ(2, get_pixel(dst.get(), 31, y));
+    EXPECT_EQ(2, get_pixel(dst.get(), 32, y));
+    EXPECT_EQ(1, get_pixel(dst.get(), 33, y));
+  }
+  // Left and right tips span two vertical pixels, with no doubled seam.
+  for (int y : { 7, 8 }) {
+    EXPECT_EQ(1, get_pixel(dst.get(), 16, y));
+    EXPECT_EQ(2, get_pixel(dst.get(), 17, y));
+    EXPECT_EQ(2, get_pixel(dst.get(), 46, y));
+    EXPECT_EQ(1, get_pixel(dst.get(), 47, y));
+    EXPECT_EQ(1, get_pixel(dst.get(), 48, y));
+    EXPECT_EQ(2, get_pixel(dst.get(), 49, y));
+  }
 }
 
 TEST(Render, ZoomAndDstBounds)
