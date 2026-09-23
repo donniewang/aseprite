@@ -918,26 +918,27 @@ void Render::renderCheckeredBackground(Image* image, const gfx::Clip& area)
   }
 
   if (m_bg.type == BgType::ISOMETRIC) {
-    // Each cell is a 2:1 diamond. Adjacent cells differ in one of these
-    // diagonal coordinates, so their colors alternate.
-    const int diamond_w = 2 * tile_w;
-    const int diamond_h = tile_w;
+    // Two-pixel diagonal guides meet at the same tips every half diamond.
+    const int diamond_w = 2 * std::max(1, m_bg.stripeSize.w);
+    const double scale = (m_bg.zoom ? m_proj.zoom().scale() : 1.0);
     const int left = std::max(0, dstBounds.x);
     const int right = std::min(image->width(), dstBounds.x2());
     const int top = std::max(0, dstBounds.y);
     const int bottom = std::min(image->height(), dstBounds.y2());
 
     for (int y = top; y < bottom; ++y) {
-      const double sy = area.src.y + y - area.dst.y + 0.5;
+      const int sy = int(std::floor((area.src.y + y - area.dst.y) / scale));
       int run_start = left;
       color_t run_color = 0;
       for (int x = left; x <= right; ++x) {
         color_t color = 0;
         if (x < right) {
-          const double sx = area.src.x + x - area.dst.x + 0.5;
-          const int u = int(std::floor(sx / diamond_w + sy / diamond_h));
-          const int v = int(std::floor(sx / diamond_w - sy / diamond_h));
-          color = ((u + v) & 1) ? m_bg.color2 : m_bg.color1;
+          const int sx = int(std::floor((area.src.x + x - area.dst.x) / scale));
+          int u = (sx + 2 * sy) % diamond_w;
+          int v = (sx - 2 * sy) % diamond_w;
+          if (u < 0) u += diamond_w;
+          if (v < 0) v += diamond_w;
+          color = (u < 2 || v < 2 ? m_bg.color2 : m_bg.color1);
         }
         if (x == right || (x > left && color != run_color)) {
           fill_rect(image, run_start, y, x - 1, y, run_color);

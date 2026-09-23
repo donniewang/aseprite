@@ -182,23 +182,29 @@ TEST(Render, IsometricBackground)
   render.setBgOptions(bg);
   render.renderCheckeredBackground(dst.get(), gfx::Clip(0, 0, 0, 0, 64, 32));
 
-  EXPECT_EQ(2, get_pixel(dst.get(), 0, 0));
-  // Top and bottom tips span two horizontal pixels and meet on the next row.
-  for (int y : { 0, 15, 16 }) {
-    EXPECT_EQ(1, get_pixel(dst.get(), 30, y));
-    EXPECT_EQ(2, get_pixel(dst.get(), 31, y));
+  // The two-pixel tips are shared at the top, bottom, left, and right.
+  for (int y : { 0, 16 }) {
+    EXPECT_EQ(1, get_pixel(dst.get(), 31, y));
     EXPECT_EQ(2, get_pixel(dst.get(), 32, y));
-    EXPECT_EQ(1, get_pixel(dst.get(), 33, y));
+    EXPECT_EQ(2, get_pixel(dst.get(), 33, y));
+    EXPECT_EQ(1, get_pixel(dst.get(), 34, y));
   }
-  // Left and right tips span two vertical pixels, with no doubled seam.
-  for (int y : { 7, 8 }) {
-    EXPECT_EQ(1, get_pixel(dst.get(), 16, y));
-    EXPECT_EQ(2, get_pixel(dst.get(), 17, y));
-    EXPECT_EQ(2, get_pixel(dst.get(), 46, y));
-    EXPECT_EQ(1, get_pixel(dst.get(), 47, y));
-    EXPECT_EQ(1, get_pixel(dst.get(), 48, y));
-    EXPECT_EQ(2, get_pixel(dst.get(), 49, y));
-  }
+  EXPECT_EQ(1, get_pixel(dst.get(), 15, 8));
+  EXPECT_EQ(2, get_pixel(dst.get(), 16, 8));
+  EXPECT_EQ(2, get_pixel(dst.get(), 17, 8));
+  EXPECT_EQ(1, get_pixel(dst.get(), 18, 8));
+  EXPECT_EQ(2, get_pixel(dst.get(), 30, 1));
+  EXPECT_EQ(2, get_pixel(dst.get(), 31, 1));
+  EXPECT_EQ(1, get_pixel(dst.get(), 32, 1));
+  EXPECT_EQ(2, get_pixel(dst.get(), 34, 1));
+
+  bg.zoom = true;
+  render.setBgOptions(bg);
+  render.setProjection(Projection(PixelRatio(1, 1), Zoom(2, 1)));
+  render.renderCheckeredBackground(dst.get(), gfx::Clip(0, 0, 0, 0, 64, 32));
+  EXPECT_EQ(1, get_pixel(dst.get(), 4, 0));
+  EXPECT_EQ(1, get_pixel(dst.get(), 4, 1));
+  EXPECT_EQ(2, get_pixel(dst.get(), 4, 2));
 }
 
 TEST(Render, ZoomAndDstBounds)

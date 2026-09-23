@@ -31,12 +31,13 @@ const char* kBgShaderCode = R"(
 uniform half4 iBg1, iBg2;
 uniform half2 iStripeSize;
 uniform half iIsometric;
+uniform half iPixelScale;
 
 half4 main(vec2 fragcoord) {
  if (iIsometric > 0.5) {
-  vec2 u = vec2(fragcoord.x / iStripeSize.x + fragcoord.y / iStripeSize.y,
-                fragcoord.x / iStripeSize.x - fragcoord.y / iStripeSize.y);
-  return (mod(mod(floor(u.x), 2) + mod(floor(u.y), 2), 2) != 0.0 ? iBg2: iBg1);
+  vec2 p = floor((fragcoord - vec2(0.5)) / iPixelScale);
+  return (mod(p.x + 2.0 * p.y, iStripeSize.x) < 2.0 ||
+          mod(p.x - 2.0 * p.y, iStripeSize.x) < 2.0 ? iBg2: iBg1);
  }
  vec2 u = fragcoord.xy / iStripeSize.xy;
  return (mod(mod(floor(u.x), 2) + mod(floor(u.y), 2), 2) != 0.0 ? iBg2: iBg1);
@@ -370,8 +371,10 @@ void ShaderRenderer::renderCheckeredBackground(os::Surface* dstSurface,
   const bool isometric = (m_bgOptions.type == render::BgType::ISOMETRIC);
   builder.uniform("iIsometric") = isometric ? 1.0f : 0.0f;
   const float tileW = float(m_bgOptions.stripeSize.w) * sx;
-  builder.uniform("iStripeSize") = SkV2{ isometric ? 2.0f * tileW : tileW,
-                                         isometric ? tileW : float(m_bgOptions.stripeSize.h) * sy };
+  builder.uniform("iPixelScale") = sx;
+  builder.uniform("iStripeSize") = SkV2{ isometric ? 2.0f * float(m_bgOptions.stripeSize.w) : tileW,
+                                         isometric ? float(m_bgOptions.stripeSize.w) :
+                                                      float(m_bgOptions.stripeSize.h) * sy };
 
   SkCanvas* canvas = &static_cast<os::SkiaSurface*>(dstSurface)->canvas();
   canvas->save();
