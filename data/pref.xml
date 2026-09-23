@@ -558,6 +558,8 @@
       <option id="zoom" type="bool" default="true" />
       <option id="color1" type="app::Color" default="app::Color::fromRgb(128, 128, 128)" />
       <option id="color2" type="app::Color" default="app::Color::fromRgb(192, 192, 192)" />
+      <option id="isometric_color1" type="app::Color" default="app::Color::fromRgb(255, 255, 255)" />
+      <option id="isometric_color2" type="app::Color" default="app::Color::fromRgb(128, 128, 128)" />
     </section>
     <section id="timeline">
       <option id="first_frame" type="int" default="1" />

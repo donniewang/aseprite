@@ -36,6 +36,12 @@ bool SwapCheckerboardColorsCommand::onEnabled(Context* context)
 void SwapCheckerboardColorsCommand::onExecute(Context* context)
 {
   DocumentPreferences& docPref = Preferences::instance().document(context->activeDocument());
+  if (docPref.bg.pattern() == app::gen::BgPattern::ISOMETRIC) {
+    const app::Color c1 = docPref.bg.isometricColor1();
+    docPref.bg.isometricColor1(docPref.bg.isometricColor2());
+    docPref.bg.isometricColor2(c1);
+    return;
+  }
   app::Color c1 = docPref.bg.color1();
   app::Color c2 = docPref.bg.color2();
 

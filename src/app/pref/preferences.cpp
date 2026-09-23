@@ -281,6 +281,14 @@ void Preferences::serializeDocPref(const Doc* doc, app::DocumentPreferences* doc
   else {
     // Load default preferences, or preferences from .ini file.
     docPref->load();
+    if ((!doc || isSet(docPref->bg.pattern)) &&
+        docPref->bg.pattern() == app::gen::BgPattern::ISOMETRIC &&
+        !isSet(docPref->bg.isometricColor1) &&
+        (docPref->bg.color1() != app::Color::fromRgb(128, 128, 128) ||
+         docPref->bg.color2() != app::Color::fromRgb(192, 192, 192))) {
+      docPref->bg.isometricColor1(docPref->bg.color1());
+      docPref->bg.isometricColor2(docPref->bg.color2());
+    }
   }
 
   if (doc) {

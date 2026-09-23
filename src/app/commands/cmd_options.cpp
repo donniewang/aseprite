@@ -477,11 +477,21 @@ public:
     bgPattern()->Change.connect([this] {
       const bool isometric = (bgPattern()->getSelectedItemIndex() ==
                               int(app::gen::BgPattern::ISOMETRIC));
-      if (isometric &&
-          checkeredBgColor1()->getColor() == app::Color::fromRgb(128, 128, 128) &&
-          checkeredBgColor2()->getColor() == app::Color::fromRgb(192, 192, 192)) {
-        checkeredBgColor1()->setColor(app::Color::fromRgb(255, 255, 255));
-        checkeredBgColor2()->setColor(app::Color::fromRgb(128, 128, 128));
+      if (isometric != (m_curPref->bg.pattern() == app::gen::BgPattern::ISOMETRIC)) {
+        if (isometric) {
+          m_curPref->bg.color1(checkeredBgColor1()->getColor());
+          m_curPref->bg.color2(checkeredBgColor2()->getColor());
+          checkeredBgColor1()->setColor(m_curPref->bg.isometricColor1());
+          checkeredBgColor2()->setColor(m_curPref->bg.isometricColor2());
+        }
+        else {
+          m_curPref->bg.isometricColor1(checkeredBgColor1()->getColor());
+          m_curPref->bg.isometricColor2(checkeredBgColor2()->getColor());
+          checkeredBgColor1()->setColor(m_curPref->bg.color1());
+          checkeredBgColor2()->setColor(m_curPref->bg.color2());
+        }
+        m_curPref->bg.pattern(isometric ? app::gen::BgPattern::ISOMETRIC :
+                                           app::gen::BgPattern::CHECKERED);
       }
       static const char* checkeredSizes[] = { "16x16", "8x8", "4x4", "2x2", "1x1" };
       static const char* isometricSizes[] = { "32x16", "16x8", "8x4", "4x2", "2x1" };
@@ -989,8 +999,14 @@ public:
         gfx::Size(checkeredBgCustomW()->textInt(), checkeredBgCustomH()->textInt()));
     }
     m_curPref->bg.zoom(checkeredBgZoom()->isSelected());
-    m_curPref->bg.color1(checkeredBgColor1()->getColor());
-    m_curPref->bg.color2(checkeredBgColor2()->getColor());
+    if (m_curPref->bg.pattern() == app::gen::BgPattern::ISOMETRIC) {
+      m_curPref->bg.isometricColor1(checkeredBgColor1()->getColor());
+      m_curPref->bg.isometricColor2(checkeredBgColor2()->getColor());
+    }
+    else {
+      m_curPref->bg.color1(checkeredBgColor1()->getColor());
+      m_curPref->bg.color2(checkeredBgColor2()->getColor());
+    }
 
     // Alerts preferences
     m_pref.openFile.openSequence(gen::SequenceDecision(openSequence()->getSelectedItemIndex()));
@@ -1669,14 +1685,11 @@ private:
     checkeredBgSize()->setSelectedItemIndex(int(m_curPref->bg.type()));
     bgPattern()->setSelectedItemIndex(int(m_curPref->bg.pattern()));
     checkeredBgZoom()->setSelected(m_curPref->bg.zoom());
-    checkeredBgColor1()->setColor(m_curPref->bg.color1());
-    checkeredBgColor2()->setColor(m_curPref->bg.color2());
-    if (m_curPref->bg.pattern() == app::gen::BgPattern::ISOMETRIC &&
-        checkeredBgColor1()->getColor() == app::Color::fromRgb(128, 128, 128) &&
-        checkeredBgColor2()->getColor() == app::Color::fromRgb(192, 192, 192)) {
-      checkeredBgColor1()->setColor(app::Color::fromRgb(255, 255, 255));
-      checkeredBgColor2()->setColor(app::Color::fromRgb(128, 128, 128));
-    }
+    const bool isometric = (m_curPref->bg.pattern() == app::gen::BgPattern::ISOMETRIC);
+    checkeredBgColor1()->setColor(isometric ? m_curPref->bg.isometricColor1() :
+                                          m_curPref->bg.color1());
+    checkeredBgColor2()->setColor(isometric ? m_curPref->bg.isometricColor2() :
+                                          m_curPref->bg.color2());
 
     onCheckeredBgSizeChange();
   }
@@ -1736,14 +1749,21 @@ private:
       checkeredBgZoom()->setSelected(pref.bg.zoom.defaultValue());
       checkeredBgColor1()->setColor(pref.bg.color1.defaultValue());
       checkeredBgColor2()->setColor(pref.bg.color2.defaultValue());
+      pref.bg.isometricColor1(pref.bg.isometricColor1.defaultValue());
+      pref.bg.isometricColor2(pref.bg.isometricColor2.defaultValue());
     }
     // Reset document preferences with global settings
     else {
       checkeredBgSize()->setSelectedItemIndex(int(pref.bg.type()));
       bgPattern()->setSelectedItemIndex(int(pref.bg.pattern()));
+      m_curPref->bg.color1(pref.bg.color1());
+      m_curPref->bg.color2(pref.bg.color2());
+      m_curPref->bg.isometricColor1(pref.bg.isometricColor1());
+      m_curPref->bg.isometricColor2(pref.bg.isometricColor2());
       checkeredBgZoom()->setSelected(pref.bg.zoom());
-      checkeredBgColor1()->setColor(pref.bg.color1());
-      checkeredBgColor2()->setColor(pref.bg.color2());
+      const bool isometric = (pref.bg.pattern() == app::gen::BgPattern::ISOMETRIC);
+      checkeredBgColor1()->setColor(isometric ? pref.bg.isometricColor1() : pref.bg.color1());
+      checkeredBgColor2()->setColor(isometric ? pref.bg.isometricColor2() : pref.bg.color2());
     }
   }
 
