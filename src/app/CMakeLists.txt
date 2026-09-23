@@ -422,6 +422,7 @@ target_sources(app-lib PRIVATE
   commands/cmd_home.cpp
   commands/cmd_import_sprite_sheet.cpp
   commands/cmd_isometric_extrude.cpp
+  commands/cmd_isometric_rounded_rectangle.cpp
   commands/cmd_invert_mask.cpp
   commands/cmd_keyboard_shortcuts.cpp
   commands/cmd_launch.cpp

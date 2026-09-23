@@ -1,0 +1,24 @@
+<!-- Aseprite -->
+<gui>
+<window id="isometric_rounded_rectangle" text="@.title">
+  <vbox>
+    <grid columns="2">
+      <label text="@.length" for="length" />
+      <expr id="length" expansive="true" suffix="px" />
+      <label text="@.width" for="width" />
+      <expr id="width" expansive="true" suffix="px" />
+      <label text="@.radius" for="radius" />
+      <expr id="radius" expansive="true" suffix="px" />
+      <label text="@.center_x" for="center_x" />
+      <expr id="center_x" expansive="true" suffix="px" />
+      <label text="@.center_y" for="center_y" />
+      <expr id="center_y" expansive="true" suffix="px" />
+    </grid>
+    <separator horizontal="true" />
+    <hbox homogeneous="true" cell_align="right">
+      <button text="@general.ok" closewindow="true" id="ok" magnet="true" minwidth="60" />
+      <button text="@general.cancel" closewindow="true" />
+    </hbox>
+  </vbox>
+</window>
+</gui>
