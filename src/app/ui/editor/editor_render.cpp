@@ -112,6 +112,10 @@ void EditorRender::setupBackground(Doc* doc, doc::PixelFormat pixelFormat)
       bgType = render::BgType::CHECKERED;
       tile = docPref.bg.size();
       break;
+    case app::gen::BgType::ISOMETRIC_64x32:
+      bgType = render::BgType::CHECKERED;
+      tile = gfx::Size(32, 32);
+      break;
     default: bgType = render::BgType::TRANSPARENT; break;
   }
 
@@ -123,8 +127,16 @@ void EditorRender::setupBackground(Doc* doc, doc::PixelFormat pixelFormat)
   bg.type = bgType;
   bg.zoom = docPref.bg.zoom();
   bg.colorPixelFormat = pixelFormat;
-  bg.color1 = color_utils::color_for_image_without_alpha(docPref.bg.color1(), pixelFormat);
-  bg.color2 = color_utils::color_for_image_without_alpha(docPref.bg.color2(), pixelFormat);
+  app::Color color1 = docPref.bg.color1();
+  app::Color color2 = docPref.bg.color2();
+  if (bgType == render::BgType::ISOMETRIC &&
+      color1 == app::Color::fromRgb(128, 128, 128) &&
+      color2 == app::Color::fromRgb(192, 192, 192)) {
+    color1 = app::Color::fromRgb(255, 255, 255);
+    color2 = app::Color::fromRgb(128, 128, 128);
+  }
+  bg.color1 = color_utils::color_for_image_without_alpha(color1, pixelFormat);
+  bg.color2 = color_utils::color_for_image_without_alpha(color2, pixelFormat);
   bg.stripeSize = tile;
   m_renderer->setBgOptions(bg);
 }

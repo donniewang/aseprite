@@ -38,6 +38,7 @@
       <value id="CHECKERED_2x2" value="3" />
       <value id="CHECKERED_1x1" value="4" />
       <value id="CHECKERED_CUSTOM" value="5" />
+      <value id="ISOMETRIC_64x32" value="6" />
     </enum>
     <enum id="BgPattern">
       <value id="CHECKERED" value="0" />

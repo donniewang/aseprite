@@ -468,6 +468,8 @@ public:
     checkeredBgSize()->addItem("2x2");
     checkeredBgSize()->addItem("1x1");
     checkeredBgSize()->addItem(Strings::options_bg_custom_size());
+    checkeredBgSize()->addItem("64x32");
+    checkeredBgSize()->getItem(int(app::gen::BgType::ISOMETRIC_64x32))->setVisible(false);
     checkeredBgSize()->Change.connect([this] { onCheckeredBgSizeChange(); });
 
     bgPattern()->addItem(Strings::options_bg_pattern_checkered());
@@ -475,10 +477,20 @@ public:
     bgPattern()->Change.connect([this] {
       const bool isometric = (bgPattern()->getSelectedItemIndex() ==
                               int(app::gen::BgPattern::ISOMETRIC));
+      if (isometric &&
+          checkeredBgColor1()->getColor() == app::Color::fromRgb(128, 128, 128) &&
+          checkeredBgColor2()->getColor() == app::Color::fromRgb(192, 192, 192)) {
+        checkeredBgColor1()->setColor(app::Color::fromRgb(255, 255, 255));
+        checkeredBgColor2()->setColor(app::Color::fromRgb(128, 128, 128));
+      }
       static const char* checkeredSizes[] = { "16x16", "8x8", "4x4", "2x2", "1x1" };
       static const char* isometricSizes[] = { "32x16", "16x8", "8x4", "4x2", "2x1" };
       for (int i = 0; i < 5; ++i)
         checkeredBgSize()->setItemText(i, isometric ? isometricSizes[i] : checkeredSizes[i]);
+      checkeredBgSize()->getItem(int(app::gen::BgType::ISOMETRIC_64x32))->setVisible(isometric);
+      if (!isometric && checkeredBgSize()->getSelectedItemIndex() ==
+                          int(app::gen::BgType::ISOMETRIC_64x32))
+        checkeredBgSize()->setSelectedItemIndex(int(app::gen::BgType::CHECKERED_16x16));
       const int selectedSize = checkeredBgSize()->getSelectedItemIndex();
       if (selectedSize >= 0)
         checkeredBgSize()->getEntryWidget()->setText(checkeredBgSize()->getItemText(selectedSize));
@@ -1659,6 +1671,12 @@ private:
     checkeredBgZoom()->setSelected(m_curPref->bg.zoom());
     checkeredBgColor1()->setColor(m_curPref->bg.color1());
     checkeredBgColor2()->setColor(m_curPref->bg.color2());
+    if (m_curPref->bg.pattern() == app::gen::BgPattern::ISOMETRIC &&
+        checkeredBgColor1()->getColor() == app::Color::fromRgb(128, 128, 128) &&
+        checkeredBgColor2()->getColor() == app::Color::fromRgb(192, 192, 192)) {
+      checkeredBgColor1()->setColor(app::Color::fromRgb(255, 255, 255));
+      checkeredBgColor2()->setColor(app::Color::fromRgb(128, 128, 128));
+    }
 
     onCheckeredBgSizeChange();
   }
