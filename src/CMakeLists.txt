@@ -208,6 +208,20 @@ if(ENABLE_ASEPRITE_EXE)
     set_target_properties(aseprite PROPERTIES
       MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_LIST_DIR}/main/osx/Info.plist")
 
+    set(Aseprite_ICON ase256)
+    set(Document_ICON doc256)
+    set(Extension_ICON ext256)
+    foreach(icon Aseprite Document Extension)
+      set(icon_source "${CMAKE_CURRENT_SOURCE_DIR}/../data/icons/${${icon}_ICON}.png")
+      set(icon_output "${CMAKE_CURRENT_BINARY_DIR}/${icon}.icns")
+      add_custom_command(OUTPUT "${icon_output}"
+        COMMAND /usr/bin/sips -s format icns "${icon_source}" --out "${icon_output}"
+        DEPENDS "${icon_source}")
+      set_source_files_properties("${icon_output}" PROPERTIES
+        MACOSX_PACKAGE_LOCATION Resources)
+      target_sources(aseprite PRIVATE "${icon_output}")
+    endforeach()
+
     # As the output now is inside the Aseprite.app bundle, we generate
     # a symlink to replace the old bin/aseprite binary and run the
     # binary inside the .app bundle.
